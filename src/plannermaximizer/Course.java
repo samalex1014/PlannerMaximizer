@@ -97,7 +97,11 @@ public class Course extends Object{
         labTimes[TUESDAY] =new MeetingTimes(info[5]);
         labTimes[WEDNESDAY]= new MeetingTimes(info[6]);
         labTimes[THURSDAY] = new MeetingTimes(info[7]);
-        labTimes[FRIDAY] = new MeetingTimes(info[8]);
+        if(info.length > 8) {
+            labTimes[FRIDAY] = new MeetingTimes(info[8]);
+        } else {
+            labTimes[FRIDAY] = new MeetingTimes();
+        }
     }
     
     public boolean conflicts(Course option) {
@@ -107,9 +111,27 @@ public class Course extends Object{
             if(schedule[i].conflictsWith(option.schedule[i])) {
                 doesntWork = true;
             }
-            if(labTimes != null && labTimes[i].conflictsWith(option.schedule[i])) {
-                doesntWork = true;
+            if(labTimes != null && option.labTimes != null) {
+                if(labTimes[i].conflictsWith(option.labTimes[i])) {
+                    doesntWork = true;
+                }
+                
+                if(labTimes[i].conflictsWith(option.schedule[i])) {
+                    doesntWork = true;
+                }
+                
+                if(schedule[i].conflictsWith(option.labTimes[i])) {
+                    doesntWork = true;
+                }
+            } else if (labTimes != null && option.labTimes == null) {
+                if(labTimes[i].conflictsWith(option.schedule[i])) {
+                    doesntWork = true;
+                }
+            } else if (labTimes == null && option.labTimes != null) {
+                if(schedule[i].conflictsWith(option.labTimes[i]));
             }
+            
+            
         }
         
         return doesntWork;

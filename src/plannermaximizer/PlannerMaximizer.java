@@ -88,7 +88,10 @@ public class PlannerMaximizer {
 
                         createPossibleSchedule(list, courses, usedCopy, conflict, curr.clone());
                     }
+                    
+                    
                 }
+                
             }
         }
     }
