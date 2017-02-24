@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import components.naturalnumber.NaturalNumber;
+import components.naturalnumber.NaturalNumber2;
 
 /**
  *
@@ -29,7 +31,7 @@ import java.util.logging.Logger;
 
 public class PlannerMaximizer {
     
-    private static int checked = 0;
+    private static NaturalNumber checked = new NaturalNumber2();
     private static int available = 0;
 
     public static ArrayList<Course> loadFiles(String location) throws FileNotFoundException, IOException {
@@ -68,7 +70,7 @@ public class PlannerMaximizer {
 
     public static void addWithoutDuplicates(ArrayList<PossibleSchedule> list, PossibleSchedule toAdd) {
         boolean unique = true;
-        checked++;
+        checked.increment();
         for (PossibleSchedule curr : list) {
             if (curr.equals(toAdd)) {
                 unique = false;
@@ -121,8 +123,8 @@ public class PlannerMaximizer {
             Logger.getLogger(PlannerMaximizer.class.getName()).log(Level.SEVERE, null, ex);
         }*/
         //FILE LOCATION FOR SURFACE
-        //String loc = "C:\\Users\\samal\\Documents\\scheduleData.csv";
-        String loc = "C:\\Box Sync\\OSU\\OSU SP17\\scheduleData.csv";
+        String loc = "C:\\Users\\samal\\Documents\\scheduleData.csv";
+        //String loc = "C:\\Box Sync\\OSU\\OSU SP17\\scheduleData.csv";
 
         try {
             availables = loadFiles(loc);
@@ -156,9 +158,9 @@ public class PlannerMaximizer {
 
         try {
             File file = new File("C:\\Users\\samal\\Documents\\schedules.txt");
-            File altFile = new File("C:\\Box Sync\\OSU\\OSU SP17\\results.txt");
+            //File altFile = new File("C:\\Box Sync\\OSU\\OSU SP17\\results.txt");
             File fndFile = new File("C:\\Users\\samal\\Documents\\foundationSchedules.txt");
-            File altFndFile = new File("C:\\Box Sync\\OSU\\OSU SP17\\foundationScheds.txt");
+            //File altFndFile = new File("C:\\Box Sync\\OSU\\OSU SP17\\foundationScheds.txt");
 
             /* This logic will make sure that the file 
 	  * gets created if it is not present at the
@@ -171,17 +173,17 @@ public class PlannerMaximizer {
                 fndFile.createNewFile();
             }
             BufferedWriter bw = new BufferedWriter(new FileWriter(file));
-            BufferedWriter altBW = new BufferedWriter(new FileWriter(altFile));
+            //BufferedWriter altBW = new BufferedWriter(new FileWriter(altFile));
             BufferedWriter fndBw = new BufferedWriter(new FileWriter(fndFile));
-            BufferedWriter altFndBw = new BufferedWriter(new FileWriter(altFndFile));
+            //BufferedWriter altFndBw = new BufferedWriter(new FileWriter(altFndFile));
 
             printResults(bw, results);
-            printResults(altBW, results);
+            //printResults(altBW, results);
             printResults(fndBw, fndScheds);
-            printResults(altFndBw, fndScheds);
+            //printResults(altFndBw, fndScheds);
 
-            altBW.close();
-            altFndBw.close();
+            //altBW.close();
+            //altFndBw.close();
             bw.close();
             fndBw.close();
         } catch (IOException ex) {

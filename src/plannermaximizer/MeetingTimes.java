@@ -4,88 +4,63 @@
  * and open the template in the editor.
  */
 package plannermaximizer;
+
 import plannermaximizer.PossibleSchedule;
+
 /**
  *
  * @author Samuel Smith
  */
 public class MeetingTimes {
-    private boolean times[][];
-    
-    private void initTimes() {
-        times = new boolean[24][60];
-        for(boolean[] hours : times) {
-            for(boolean minutes: hours) {
-                minutes = false;
-            }
-        }
-    }
+
+    private int startTime;
+    private int endTime;
     
     public MeetingTimes() {
-        initTimes();
+        startTime = 0;
+        endTime = 0;
     }
-    
+
     public MeetingTimes(String in) {
-        initTimes();
-        if(in.length() > 0) {
-        String startEndDelims = "-";
-        String hourMinDelims = ":";
-        String[] startEnd = in.split(startEndDelims);
-        String[] startTimes = startEnd[0].split(hourMinDelims);
-        String[] endTimes = startEnd[1].split(hourMinDelims);
         
-        int startHour = Integer.parseInt(startTimes[0]);
-        int startMin = Integer.parseInt(startTimes[1]);
-        int endHour = Integer.parseInt(endTimes[0]);
-        int endMin = Integer.parseInt(endTimes[1]);
-        
-        int hoursTaken = startHour;
-        
-        while(hoursTaken < endHour) {
-            int min = startMin;
-            while(min < times[hoursTaken].length) {
-                times[hoursTaken][min] = true;
-                min++;
-            }
-            
-            hoursTaken++;
-        }
-        
-        for(int i = 0; i < endMin; i++) {
-            times[hoursTaken][i] = true;
-        }
+        if (in.length() > 0) {
+            String startEndDelims = "-";
+            String hourMinDelims = ":";
+            String[] startEnd = in.split(startEndDelims);
+            String[] startTimes = startEnd[0].split(hourMinDelims);
+            String[] endTimes = startEnd[1].split(hourMinDelims);
+
+            int startHour = Integer.parseInt(startTimes[0]);
+            int startMin = Integer.parseInt(startTimes[1]);
+            int endHour = Integer.parseInt(endTimes[0]);
+            int endMin = Integer.parseInt(endTimes[1]);
+
+            this.startTime = (startHour*60)+startMin;
+            this.endTime = (endHour*60) + endMin;
         }
     }
+
     
-    public boolean[][] getTimes() {
-        return times.clone();
-    }
-    
+
     public boolean conflictsWith(MeetingTimes option) {
         boolean conflicts = false;
-        boolean[][] optionTimes = option.getTimes();
         
-        for(int i = 0; i < times.length; i++) {
-            for(int j = 0; j < times[i].length; j++) {
-                if(times[i][j] == true && option.times[i][j] == true) {
-                    conflicts = true;
-                }
-            }
+        if(option.startTime >= this.startTime && option.startTime <= this.endTime) {
+            conflicts = true;
+        } else if (this.startTime >= option.startTime && this.startTime <= option.endTime) {
+            conflicts = true;
         }
         
+
         return conflicts;
     }
-    
-    
+
     public MeetingTimes clone() {
         MeetingTimes copy = new MeetingTimes();
-        
-        for(int i = 0; i < this.times.length; i++) {
-            for(int j = 0; j < this.times[i].length; j++) {
-                copy.times[i][j] = this.times[i][j];
-            }
-        }
-        
+
+        copy.startTime = this.startTime;
+        copy.endTime = this.endTime;
+
         return copy;
     }
 }
