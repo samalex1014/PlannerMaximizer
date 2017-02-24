@@ -85,5 +85,8 @@ public class testCourses {
         bio.addLabTimes(",,20,0,,12:00-14:45,,12:00-14:45,");
         
         assertTrue(ethics.conflicts(bio));
+        assertEquals(ethics.conflicts(bio), bio.conflicts(ethics));
     }
+    
+    
 }

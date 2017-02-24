@@ -11,7 +11,7 @@ import java.util.ArrayList;
  *
  * @author Samuel Smith
  */
-public class PossibleSchedule {
+public class PossibleSchedule extends Object {
 
     private ArrayList<Course> schedule;
     private ArrayList<Course> conflicted;
@@ -46,8 +46,39 @@ public class PossibleSchedule {
         return sb.toString();
     }
 
+    public ArrayList<Course> getSched() {
+        ArrayList<Course> newSched = new ArrayList<>();
+
+        for (Course curr : this.schedule) {
+            newSched.add(curr.clone());
+        }
+
+        return newSched;
+    }
+
+    public boolean contains(String dept, String code) {
+        boolean present = false;
+
+        for (Course curr : this.schedule) {
+            if (curr.sameCourse(dept, code)) {
+                present = true;
+            }
+        }
+
+        return present;
+    }
+
     public int size() {
         return this.schedule.size() + this.conflicted.size();
+    }
+
+    public int creditHours() {
+        int totHours = 0;
+        for (Course curr : schedule) {
+            totHours += curr.getHours();
+        }
+
+        return totHours;
     }
 
     public boolean add(Course toAdd) {
@@ -57,8 +88,10 @@ public class PossibleSchedule {
             if (current.conflicts(toAdd)) {
                 added = false;
             }
-            
-            if(current.sameCourse(toAdd)) {
+            if (toAdd.conflicts(current)) {
+                added = false;
+            }
+            if (current.sameCourse(toAdd)) {
                 added = false;
             }
         }
@@ -102,20 +135,37 @@ public class PossibleSchedule {
     public PossibleSchedule clone() {
         return new PossibleSchedule(this);
     }
-    
+
     public boolean contains(Course check) {
         boolean isPresent = false;
-        for(Course curr : this.schedule) {
-            if(curr.equals(check)) {
+        for (Course curr : this.schedule) {
+            if (curr.equals(check)) {
                 isPresent = true;
             }
         }
-        if(conflicted != null) {
-        for(Course curr : this.conflicted) {
-            if(curr.equals(check)) {
+        if (conflicted != null) {
+            for (Course curr : this.conflicted) {
+                if (curr.equals(check)) {
+                    isPresent = true;
+                }
+            }
+        }
+        return isPresent;
+    }
+
+    public boolean containsDiffSection(Course check) {
+        boolean isPresent = false;
+        for (Course curr : this.schedule) {
+            if (curr.sameCourse(check)) {
                 isPresent = true;
             }
         }
+        if (conflicted != null) {
+            for (Course curr : this.conflicted) {
+                if (curr.sameCourse(check)) {
+                    isPresent = true;
+                }
+            }
         }
         return isPresent;
     }
@@ -127,18 +177,22 @@ public class PossibleSchedule {
             if (this.creditHours == check.creditHours) {
                 same = true;
                 for (int i = 0; i < check.schedule.size(); i++) {
-                    if (!this.contains(check.schedule.get(i))) {
+                    if (!this.containsDiffSection(check.schedule.get(i))) {
                         same = false;
                     }
                 }
-                
-                for(int i = 0; i < this.schedule.size(); i++) {
-                    if(!check.contains(this.schedule.get(i))) {
+
+                for (int i = 0; i < this.schedule.size(); i++) {
+                    if (!check.containsDiffSection(this.schedule.get(i))) {
                         same = false;
                     }
                 }
             }
         }
         return same;
+    }
+
+    public int DEBUGGING_Sched_Size() {
+        return schedule.size();
     }
 }

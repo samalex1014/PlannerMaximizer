@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package plannermaximizer;
-
+import plannermaximizer.PossibleSchedule;
 /**
  *
  * @author Samuel Smith
@@ -67,7 +67,7 @@ public class MeetingTimes {
         
         for(int i = 0; i < times.length; i++) {
             for(int j = 0; j < times[i].length; j++) {
-                if(times[i][j] == true && optionTimes[i][j] == true) {
+                if(times[i][j] == true && option.times[i][j] == true) {
                     conflicts = true;
                 }
             }
@@ -76,4 +76,16 @@ public class MeetingTimes {
         return conflicts;
     }
     
+    
+    public MeetingTimes clone() {
+        MeetingTimes copy = new MeetingTimes();
+        
+        for(int i = 0; i < this.times.length; i++) {
+            for(int j = 0; j < this.times[i].length; j++) {
+                copy.times[i][j] = this.times[i][j];
+            }
+        }
+        
+        return copy;
+    }
 }

@@ -71,7 +71,10 @@ public class Course extends Object{
         this.code = toBeCopied.code;
         this.dept = toBeCopied.dept;
         this.hours = toBeCopied.hours;
-        this.schedule = toBeCopied.schedule;
+        this.schedule = toBeCopied.schedule.clone();
+        if(toBeCopied.labTimes != null) {
+        this.labTimes = toBeCopied.labTimes.clone();
+        }
         this.section = toBeCopied.section;
     }
     
@@ -107,7 +110,9 @@ public class Course extends Object{
         labTimes[MONDAY] = new MeetingTimes(info[4]);
         labTimes[TUESDAY] =new MeetingTimes(info[5]);
         labTimes[WEDNESDAY]= new MeetingTimes(info[6]);
+        if(info.length > 7) {
         labTimes[THURSDAY] = new MeetingTimes(info[7]);
+        }
         if(info.length > 8) {
             labTimes[FRIDAY] = new MeetingTimes(info[8]);
         } 
@@ -178,5 +183,13 @@ public class Course extends Object{
     
     public boolean sameCourse(Course check) {
         return this.dept.equals(check.dept) && this.code.equals(check.code);
+    }
+    
+    public boolean sameCourse(String dept, String code) {
+        return this.dept.equals(dept) && this.code.equals(code);
+    }
+    
+    public int getHours() {
+        return this.hours;
     }
 }
