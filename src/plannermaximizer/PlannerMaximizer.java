@@ -58,40 +58,29 @@ public class PlannerMaximizer {
 
     }
 
-    public static void createPossibleSchedule(ArrayList<PossibleSchedule> list,
-            ArrayList<Course> courses, ArrayList<Integer> used, ArrayList<Integer> conflict,
-            PossibleSchedule curr) {
-        if (used.size() + conflict.size() == courses.size() - 1) {
-            int left = 0;
-            while (used.contains(left) || conflict.contains(left)) {
-                left++;
+    public static void addWithoutDuplicates(ArrayList<PossibleSchedule> list, PossibleSchedule toAdd) {
+        boolean unique = true;
+        for(PossibleSchedule curr : list) {
+            if(curr.equals(toAdd)) {
+                unique = false;
             }
-
-            curr.add(courses.get(left));
-
-            used.add(left);
-
-            list.add(curr);
+        }
+        
+        if(unique) {
+            list.add(toAdd);
+        }
+    }
+    public static void createPossibleSchedule(ArrayList<PossibleSchedule> list,
+            ArrayList<Course> courses, PossibleSchedule curr) {
+        if(curr.size() == courses.size()) {
+            addWithoutDuplicates(list, curr.clone());
         } else {
-            for (int i = 0; i < courses.size(); i++) {
-                if (!used.contains(i) && !conflict.contains(i)) {
-                    boolean res = curr.add(courses.get(i));
-                    if (res) {
-                        used.add(i);
-                    } else {
-                        used.add(i);
-                    }
-
-                    if (used.size() < courses.size()) {
-                        ArrayList<Integer> usedCopy = new ArrayList<>();
-                        usedCopy = (ArrayList<Integer>) used.clone();
-
-                        createPossibleSchedule(list, courses, usedCopy, conflict, curr.clone());
-                    }
-                    
-                    
+            for(int i = 0; i < courses.size(); i++) {
+                if(!curr.contains(courses.get(i))) {
+                    curr.add(courses.get(i));
+                    createPossibleSchedule(list, courses, curr);
+                    curr.remove(courses.get(i));
                 }
-                
             }
         }
     }
@@ -103,14 +92,15 @@ public class PlannerMaximizer {
         ArrayList<Course> availables = new ArrayList<>();
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
+        /*
         System.out.print("Enter file location of schedule: ");
         String loc = "";
         try {
             loc = br.readLine();
         } catch (IOException ex) {
             Logger.getLogger(PlannerMaximizer.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }*/
+        String loc = "C:\\Users\\samal\\Documents\\scheduleData.csv";
 
         try {
             availables = loadFiles(loc);
@@ -125,7 +115,7 @@ public class PlannerMaximizer {
         ArrayList<Integer> conflict = new ArrayList<>();
         PossibleSchedule curr = new PossibleSchedule();
 
-        createPossibleSchedule(results, availables, used, conflict, curr);
+        createPossibleSchedule(results, availables, curr);
         
         removeDuplicates(results);
 

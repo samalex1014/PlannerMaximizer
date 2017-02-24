@@ -42,7 +42,7 @@ public class MeetingTimes {
         int hoursTaken = startHour;
         
         while(hoursTaken < endHour) {
-            int min = 0;
+            int min = startMin;
             while(min < times[hoursTaken].length) {
                 times[hoursTaken][min] = true;
                 min++;

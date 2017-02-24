@@ -66,7 +66,7 @@ public class testCourses {
         Course fnd = new Course("CSE,2331,1,3,13:50-14:45,13:50-14:45,,13:50-14:45,13:50-14:45");
         Course fnd2 = new Course("CSE,2331,2,3,13:40-14:35,13:40-14:35,,13:50-14:45,13:50-14:45");
         
-        assertTrue(fnd.equals(fnd2));
+        assertTrue(fnd.sameCourse(fnd2));
     }
     
     @Test
@@ -75,5 +75,15 @@ public class testCourses {
         Course ops = new Course("CSE,2431,0010,3,14:20-15:40,14:20-15:40,,14:20-15:40,14:20-15:40");
         
         assertTrue(!fnd.equals(ops));
+    }
+    
+    @Test
+    public void testConflicts_TrueLab() {
+        Course ethics = new Course("CSE,2501,20,1,12:45-14:05,12:45-14:05,12:45-14:05,12:45-14:05,");
+        Course bio = new Course("BIO,1113,10,4,9:50-11:25,9:50-11:25,9:50-11:25,9:50-11:25,");
+        
+        bio.addLabTimes(",,20,0,,12:00-14:45,,12:00-14:45,");
+        
+        assertTrue(ethics.conflicts(bio));
     }
 }

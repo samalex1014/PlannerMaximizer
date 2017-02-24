@@ -37,6 +37,16 @@ public class Course extends Object{
         schedule[FRIDAY] = new MeetingTimes();
     }
     
+    private void initLabSched() {
+        labTimes = new MeetingTimes[5];
+        
+        labTimes[MONDAY] = new MeetingTimes();
+        labTimes[TUESDAY] = new MeetingTimes();
+        labTimes[WEDNESDAY] = new MeetingTimes();
+        labTimes[THURSDAY] = new MeetingTimes();
+        labTimes[FRIDAY] = new MeetingTimes();
+    }
+    
     private void initTimes() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         System.out.print("Enter start hour in 24-hour format: ");
@@ -91,7 +101,8 @@ public class Course extends Object{
         String delims = ",";
         String[] info = labMeets.split(delims);
         
-        labTimes = new MeetingTimes[5];
+        initLabSched();
+        
         section = info[2];
         labTimes[MONDAY] = new MeetingTimes(info[4]);
         labTimes[TUESDAY] =new MeetingTimes(info[5]);
@@ -99,9 +110,7 @@ public class Course extends Object{
         labTimes[THURSDAY] = new MeetingTimes(info[7]);
         if(info.length > 8) {
             labTimes[FRIDAY] = new MeetingTimes(info[8]);
-        } else {
-            labTimes[FRIDAY] = new MeetingTimes();
-        }
+        } 
     }
     
     public boolean conflicts(Course option) {
@@ -111,7 +120,7 @@ public class Course extends Object{
             if(schedule[i].conflictsWith(option.schedule[i])) {
                 doesntWork = true;
             }
-            if(labTimes != null && option.labTimes != null) {
+            if(this.labTimes != null && option.labTimes != null) {
                 if(labTimes[i].conflictsWith(option.labTimes[i])) {
                     doesntWork = true;
                 }
@@ -123,12 +132,14 @@ public class Course extends Object{
                 if(schedule[i].conflictsWith(option.labTimes[i])) {
                     doesntWork = true;
                 }
-            } else if (labTimes != null && option.labTimes == null) {
-                if(labTimes[i].conflictsWith(option.schedule[i])) {
+            } else if (this.labTimes != null && option.labTimes == null) {
+                if(this.labTimes[i].conflictsWith(option.schedule[i])) {
                     doesntWork = true;
                 }
-            } else if (labTimes == null && option.labTimes != null) {
-                if(schedule[i].conflictsWith(option.labTimes[i]));
+            } else if (this.labTimes == null && option.labTimes != null) {
+                if(schedule[i].conflictsWith(option.labTimes[i])) {
+                    doesntWork = true;
+                }
             }
             
             
@@ -163,5 +174,9 @@ public class Course extends Object{
     @Override
     public Course clone() {
         return new Course(this);
+    }
+    
+    public boolean sameCourse(Course check) {
+        return this.dept.equals(check.dept) && this.code.equals(check.code);
     }
 }
