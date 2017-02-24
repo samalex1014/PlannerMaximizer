@@ -17,6 +17,7 @@ import java.io.OutputStreamWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,7 +25,12 @@ import java.util.logging.Logger;
  *
  * @author Samuel Smith
  */
+
+
 public class PlannerMaximizer {
+    
+    private static int checked = 0;
+    private static int available = 0;
 
     public static ArrayList<Course> loadFiles(String location) throws FileNotFoundException, IOException {
         ArrayList<Course> possibles = new ArrayList<Course>();
@@ -48,6 +54,8 @@ public class PlannerMaximizer {
                         line = br.readLine();
                     }
                     possibles.add(toAdd);
+                } else {
+                    possibles.add(toAdd);
                 }
             }
         }
@@ -58,12 +66,14 @@ public class PlannerMaximizer {
 
     }
 
-    public static void addWithoutDuplicates(ArrayList<PossibleSchedule> list, PossibleSchedule toAdd, int checked) {
+    public static void addWithoutDuplicates(ArrayList<PossibleSchedule> list, PossibleSchedule toAdd) {
         boolean unique = true;
+        checked++;
         for (PossibleSchedule curr : list) {
             if (curr.equals(toAdd)) {
                 unique = false;
             }
+
         }
 
         if (unique) {
@@ -73,22 +83,22 @@ public class PlannerMaximizer {
         } else {
             System.out.println("Sched: " + toAdd.toString() + " is duplicate, failed to add");
         }
-        
+
         System.out.println("Total schedules: " + list.size());
         System.out.println("Total checked: " + checked);
     }
 
     public static void createPossibleSchedule(ArrayList<PossibleSchedule> list,
-            ArrayList<Course> courses, PossibleSchedule curr, int checked) {
+            ArrayList<Course> courses, PossibleSchedule curr) {
         if (curr.size() == courses.size()) {
-            checked++;
-            addWithoutDuplicates(list, new PossibleSchedule(curr), checked);
+
+            addWithoutDuplicates(list, new PossibleSchedule(curr));
             System.out.println("Attempting to add sched: " + curr.toString());
         } else {
             for (int i = 0; i < courses.size(); i++) {
                 if (!curr.contains(courses.get(i))) {
                     curr.add(courses.get(i));
-                    createPossibleSchedule(list, courses, curr, checked);
+                    createPossibleSchedule(list, courses, curr);
                     curr.remove(courses.get(i));
                 }
             }
@@ -127,7 +137,8 @@ public class PlannerMaximizer {
         ArrayList<Integer> conflict = new ArrayList<>();
         PossibleSchedule curr = new PossibleSchedule();
 
-        createPossibleSchedule(results, availables, curr, 0);
+        createPossibleSchedule(results, availables, curr);
+        System.out.println("Total available: " + availables.size());
         ArrayList<PossibleSchedule> fndScheds = new ArrayList<>();
         for (PossibleSchedule moving : results) {
             if (moving.contains("CSE", "2331")) {
@@ -137,11 +148,17 @@ public class PlannerMaximizer {
 
         removeDuplicates(results);
 
+        sort(results);
+
+        available = availables.size();
+
         System.out.println("Total schedules found: " + results.size());
 
         try {
             File file = new File("C:\\Users\\samal\\Documents\\schedules.txt");
+            File altFile = new File("C:\\Box Sync\\OSU\\OSU SP17\\results.txt");
             File fndFile = new File("C:\\Users\\samal\\Documents\\foundationSchedules.txt");
+            File altFndFile = new File("C:\\Box Sync\\OSU\\OSU SP17\\foundationScheds.txt");
 
             /* This logic will make sure that the file 
 	  * gets created if it is not present at the
@@ -154,9 +171,17 @@ public class PlannerMaximizer {
                 fndFile.createNewFile();
             }
             BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+            BufferedWriter altBW = new BufferedWriter(new FileWriter(altFile));
             BufferedWriter fndBw = new BufferedWriter(new FileWriter(fndFile));
+            BufferedWriter altFndBw = new BufferedWriter(new FileWriter(altFndFile));
+
             printResults(bw, results);
+            printResults(altBW, results);
             printResults(fndBw, fndScheds);
+            printResults(altFndBw, fndScheds);
+
+            altBW.close();
+            altFndBw.close();
             bw.close();
             fndBw.close();
         } catch (IOException ex) {
@@ -165,16 +190,40 @@ public class PlannerMaximizer {
     }
 
     public static void printResults(BufferedWriter out, ArrayList<PossibleSchedule> poss) throws IOException {
+        out.write("---TOTAL CHECKED: " + checked + "---\n");
+        out.write("---TOTAL AVAILABLE COURSES: " + available + "---\n");
         for (int i = 0; i < poss.size(); i++) {
             ArrayList<Course> sched = poss.get(i).getSched();
 
-            out.write("Schedule " + i + "\n");
-            out.write(poss.get(i).creditHours() + "\n");
+            out.write("Schedule " + i);
+            out.write("(CH: " + poss.get(i).creditHours() + ")\n");
 
             for (Course curr : sched) {
-                out.write("\t" + curr.getDept() + " " + curr.getCode());
+                out.write("\t" + curr.getDept() + " " + curr.getCode() + "\n");
             }
+
+            out.write("\n");
         }
+    }
+
+    public static void sort(ArrayList<PossibleSchedule> list) {
+        ArrayList<PossibleSchedule> sorted = new ArrayList<>();
+        while(list.size() > 0) {
+            int maxIndex = 0;
+            
+            for(int i = 0; i < list.size(); i++) {
+                if(list.get(i).creditHours() > list.get(maxIndex).creditHours()) {
+                    maxIndex = i;
+                }
+            }
+            
+            sorted.add(list.remove(maxIndex));
+        }
+        
+        while(sorted.size() > 0) {
+            list.add(sorted.remove(0));
+        }
+        
     }
 
     public static void removeEmpties(ArrayList<Course> courses) {
