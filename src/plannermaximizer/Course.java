@@ -91,7 +91,7 @@ public class Course extends Object {
 
         if (option.startWeek >= this.startWeek && option.startWeek <= this.endWeek) {
             res = true;
-        } else if (this.startWeek >= option.startWeek && this.startWeek <= this.endWeek) {
+        } else if (this.startWeek >= option.startWeek && this.startWeek <= option.endWeek) {
             res = true;
         }
 
